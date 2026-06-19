@@ -112,7 +112,8 @@
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Sektor</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Kebutuhan</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Sumber</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Tanggal</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Tgl Regis</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Status Blast</th>
                                 <th class="px-4 py-3 text-right text-xs font-semibold text-gray-300 uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
@@ -135,6 +136,18 @@
                                     <td class="px-4 py-3 text-sm text-navy-light">{{ Str::limit($client->kebutuhan_utama, 25) }}</td>
                                     <td class="px-4 py-3 text-xs text-nw-body">{{ $client->sumber_info }}</td>
                                     <td class="px-4 py-3 text-xs text-nw-body">{{ $client->created_at->format('d M Y') }}</td>
+                                    <td class="px-4 py-3 text-xs">
+                                        @if($client->blast_status)
+                                            <div class="font-medium {{ $client->blast_status == 'Terkirim' ? 'text-emerald-600' : 'text-red-500' }}">
+                                                {{ $client->blast_status }}
+                                            </div>
+                                            <div class="text-[10px] text-gray-400 mt-0.5">
+                                                {{ \Carbon\Carbon::parse($client->last_blasted_at)->format('d M Y, H:i') }}
+                                            </div>
+                                        @else
+                                            <span class="text-gray-400 italic">Belum blast</span>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-3 text-right">
                                         <div class="flex items-center justify-end space-x-3">
                                             <a href="{{ route('admin.clients.show', $client) }}" class="link-animated text-xs font-medium text-navy hover:text-gold-dark">Detail</a>

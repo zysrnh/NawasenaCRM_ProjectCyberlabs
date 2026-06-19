@@ -21,5 +21,7 @@ class Client extends Model
         'sektor_bisnis',
         'kebutuhan_utama',
         'sumber_info',
+        'blast_status',
+        'last_blasted_at',
     ];
 }

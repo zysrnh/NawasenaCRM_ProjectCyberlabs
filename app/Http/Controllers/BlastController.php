@@ -100,11 +100,23 @@ class BlastController extends Controller
 
                 if ($response->successful()) {
                     $berhasil++;
+                    $client->update([
+                        'blast_status' => 'Terkirim',
+                        'last_blasted_at' => now(),
+                    ]);
                 } else {
                     \Illuminate\Support\Facades\Log::error('Twilio Error Body: ' . $response->body());
+                    $client->update([
+                        'blast_status' => 'Gagal',
+                        'last_blasted_at' => now(),
+                    ]);
                 }
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Error System Blast Twilio: ' . $e->getMessage());
+                $client->update([
+                    'blast_status' => 'Gagal',
+                    'last_blasted_at' => now(),
+                ]);
             }
         }
 
