@@ -24,6 +24,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/clients', [ClientController::class, 'index'])->name('admin.clients.index');
         Route::get('/clients/create', [ClientController::class, 'adminCreate'])->name('admin.clients.create');
         Route::post('/clients/store', [ClientController::class, 'adminStore'])->name('admin.clients.store');
+        Route::post('/clients/bulkdestroy', [ClientController::class, 'bulkDestroy'])->name('admin.clients.bulk-destroy');
         Route::get('/clients/{client}', [ClientController::class, 'show'])->name('admin.clients.show');
         Route::delete('/clients/{client}', [ClientController::class, 'destroy'])->name('admin.clients.destroy');
 

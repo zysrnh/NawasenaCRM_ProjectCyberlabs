@@ -12,8 +12,9 @@ class BlastController extends Controller
     {
         $sektorList = Kategori::where('tipe', 'sektor')->orderBy('nama')->pluck('nama');
         $kebutuhanList = Kategori::where('tipe', 'kebutuhan')->orderBy('nama')->pluck('nama');
+        $klienList = Client::orderBy('nama_klien')->get(['id', 'nama_klien', 'nama_pic', 'nomor_telepon']);
 
-        return view('admin.blast.index', compact('sektorList', 'kebutuhanList'));
+        return view('admin.blast.index', compact('sektorList', 'kebutuhanList', 'klienList'));
     }
 
     public function getTargetCount(Request $request)
@@ -25,6 +26,8 @@ class BlastController extends Controller
                 $query->where('sektor_bisnis', $request->nilai);
             } elseif ($request->kategori === 'kebutuhan') {
                 $query->where('kebutuhan_utama', $request->nilai);
+            } elseif ($request->kategori === 'klien') {
+                $query->where('id', $request->nilai);
             } elseif ($request->kategori === 'semua') {
                 // do nothing, count all
             }
@@ -36,7 +39,7 @@ class BlastController extends Controller
     public function send(Request $request)
     {
         $request->validate([
-            'kategori' => 'required|in:sektor,kebutuhan,semua',
+            'kategori' => 'required|in:sektor,kebutuhan,semua,klien',
             'nilai' => 'required_unless:kategori,semua',
             'pesan' => 'required|string|min:10',
         ]);
@@ -47,6 +50,8 @@ class BlastController extends Controller
             $query->where('sektor_bisnis', $request->nilai);
         } elseif ($request->kategori === 'kebutuhan') {
             $query->where('kebutuhan_utama', $request->nilai);
+        } elseif ($request->kategori === 'klien') {
+            $query->where('id', $request->nilai);
         }
 
         $clients = $query->get();

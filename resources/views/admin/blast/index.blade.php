@@ -65,6 +65,12 @@
                                         <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                                         Kebutuhan Layanan
                                     </button>
+                                    <button type="button" @click="setKategori('klien')"
+                                        :class="kategori === 'klien' ? 'bg-navy text-white border-navy shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:border-navy/40 hover:bg-gray-50'"
+                                        class="w-full flex items-center gap-2.5 px-3 py-2.5 border rounded-lg text-xs font-semibold transition-all duration-150">
+                                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                        Cari Nama Klien
+                                    </button>
                                 </div>
                                 <input type="hidden" name="kategori" :value="kategori">
 
@@ -90,6 +96,17 @@
                                                 class="px-2.5 py-1.5 border rounded-md text-[11px] font-medium transition-all duration-150 cursor-pointer">{{ $k }}</button>
                                         @endforeach
                                     </div>
+                                </div>
+
+                                {{-- Klien Select --}}
+                                <div x-show="kategori === 'klien'" x-transition.duration.150ms class="border-t border-gray-100 pt-3 mt-1">
+                                    <label class="block text-[10px] font-semibold text-gray-400 mb-2 uppercase tracking-widest">Cari Nama Klien</label>
+                                    <select :value="nilai" @change="selectNilai($event.target.value)" class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:border-navy focus:ring-1 focus:ring-navy focus:outline-none bg-white">
+                                        <option value="" disabled selected>Pilih Klien...</option>
+                                        @foreach ($klienList as $klien)
+                                            <option value="{{ $klien->id }}">{{ $klien->nama_klien }} {{ $klien->nama_pic ? '- '.$klien->nama_pic : '' }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <input type="hidden" name="nilai" :value="nilai">
 

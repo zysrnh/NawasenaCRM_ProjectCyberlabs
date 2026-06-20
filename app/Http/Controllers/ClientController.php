@@ -232,4 +232,19 @@ class ClientController extends Controller
         $client->delete();
         return back()->with('success', 'Data klien berhasil dihapus.');
     }
+
+    /**
+     * Admin: Bulk Delete clients
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:clients,id',
+        ]);
+
+        Client::whereIn('id', $request->ids)->delete();
+
+        return back()->with('success', count($request->ids) . ' data klien berhasil dihapus.');
+    }
 }

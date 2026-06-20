@@ -114,12 +114,26 @@
                 </form>
             </div>
 
-            {{-- Table --}}
+            {{-- Bulk action bar (shown via JS) --}}
+            <div id="bulk-action-bar" style="display:none;" class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-4 flex items-center justify-between shadow-sm">
+                <div class="text-sm text-red-800 font-medium flex items-center">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span id="selected-count" class="font-bold mr-1">0</span> klien dipilih
+                </div>
+                <button type="button" onclick="confirmBulkDelete()" class="btn-hover px-4 py-1.5 bg-red-600 text-white text-xs font-bold rounded hover:bg-red-700 flex items-center">
+                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Hapus Terpilih
+                </button>
+            </div>
+
             <div class="table-container bg-white border border-gray-200 rounded overflow-hidden">
                 <div class="hidden md:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-navy">
                             <tr>
+                                <th class="px-4 py-3 text-left w-10">
+                                    <input type="checkbox" id="check-all" onchange="toggleAllClients(this)" class="rounded border-gray-400 cursor-pointer">
+                                </th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Klien</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Kontak</th>
                                 <th class="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Sektor</th>
@@ -133,6 +147,9 @@
                         <tbody class="divide-y divide-gray-100">
                             @forelse ($clients as $client)
                                 <tr class="table-row">
+                                    <td class="px-4 py-3 w-10">
+                                        <input type="checkbox" class="client-checkbox rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer" value="{{ $client->id }}" onchange="updateBulkBar()">
+                                    </td>
                                     <td class="px-4 py-3">
                                         <div class="text-sm font-medium text-navy">{{ $client->nama_klien }}</div>
                                         @if ($client->nama_pic)
@@ -221,6 +238,110 @@
                 @if ($clients->hasPages())
                     <div class="px-4 py-3 border-t border-gray-200 bg-nw-light">{{ $clients->links() }}</div>
                 @endif
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+    <script>
+        function toggleAllClients(checkbox) {
+            document.querySelectorAll('.client-checkbox').forEach(cb => {
+                cb.checked = checkbox.checked;
+            });
+            updateBulkBar();
+        }
+
+        function updateBulkBar() {
+            const checked = document.querySelectorAll('.client-checkbox:checked');
+            const bar = document.getElementById('bulk-action-bar');
+            const countEl = document.getElementById('selected-count');
+            if (checked.length > 0) {
+                bar.style.display = 'flex';
+                countEl.textContent = checked.length;
+            } else {
+                bar.style.display = 'none';
+            }
+        }
+
+function confirmBulkDelete() {
+            const checked = document.querySelectorAll('.client-checkbox:checked');
+            const ids = Array.from(checked).map(cb => cb.value);
+            if (ids.length === 0) return;
+
+            // Tampilkan custom modal
+            document.getElementById('modal-count').textContent = ids.length;
+            document.getElementById('delete-modal').style.display = 'flex';
+            window._pendingDeleteIds = ids;
+        }
+
+        function closeBulkModal() {
+            document.getElementById('delete-modal').style.display = 'none';
+            window._pendingDeleteIds = [];
+        }
+
+        function executeBulkDelete() {
+            const ids = window._pendingDeleteIds || [];
+            if (ids.length === 0) return;
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("admin.clients.bulk-destroy") }}';
+
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+            form.appendChild(csrf);
+
+            ids.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Tutup modal kalau klik backdrop
+        document.getElementById('delete-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeBulkModal();
+        });
+    </script>
+    @endpush
+
+    {{-- Custom Delete Modal --}}
+    <div id="delete-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.55); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:16px; box-shadow:0 24px 48px rgba(0,0,0,0.18); width:100%; max-width:400px; margin:16px; overflow:hidden; animation: modalIn 0.2s ease-out;">
+            {{-- Header --}}
+            <div style="background:linear-gradient(135deg,#1e3a5f,#263145); padding:20px 24px; display:flex; align-items:center; gap:12px;">
+                <div style="width:40px; height:40px; border-radius:50%; background:rgba(239,68,68,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <svg width="20" height="20" fill="none" stroke="#f87171" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </div>
+                <div>
+                    <div style="color:#fff; font-size:15px; font-weight:700;">Konfirmasi Hapus</div>
+                    <div style="color:rgba(255,255,255,0.6); font-size:12px; margin-top:2px;">Nawasena CRM</div>
+                </div>
+            </div>
+            {{-- Body --}}
+            <div style="padding:24px;">
+                <p style="color:#374151; font-size:14px; line-height:1.6; margin:0 0 8px;">
+                    Anda akan menghapus <strong style="color:#dc2626;" id="modal-count">0</strong> data klien secara permanen.
+                </p>
+                <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:10px 14px; display:flex; align-items:flex-start; gap:8px;">
+                    <svg width="16" height="16" fill="none" stroke="#ef4444" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                    <span style="color:#b91c1c; font-size:12px; line-height:1.5;">Tindakan ini tidak dapat dibatalkan. Data yang dihapus tidak bisa dipulihkan.</span>
+                </div>
+            </div>
+            {{-- Footer --}}
+            <div style="padding:0 24px 20px; display:flex; gap:10px; justify-content:flex-end;">
+                <button onclick="closeBulkModal()" style="padding:9px 20px; border:1.5px solid #d1d5db; border-radius:8px; background:#fff; color:#374151; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='#fff'">Batal</button>
+                <button onclick="executeBulkDelete()" style="padding:9px 20px; border:none; border-radius:8px; background:#dc2626; color:#fff; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.15s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    Ya, Hapus Sekarang
+                </button>
             </div>
         </div>
     </div>
