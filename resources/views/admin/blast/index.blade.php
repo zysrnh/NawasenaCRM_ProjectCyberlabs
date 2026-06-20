@@ -46,7 +46,7 @@
                                 <h3 class="text-[11px] font-bold text-white uppercase tracking-wider">Target Penerima</h3>
                             </div>
                             <div class="p-3 space-y-2">
-                                <div class="space-y-1.5">
+                                <div class="flex flex-col gap-2">
                                     <button type="button" @click="setKategori('semua')"
                                         :class="kategori === 'semua' ? 'bg-navy text-white border-navy shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:border-navy/40 hover:bg-gray-50'"
                                         class="w-full flex items-center gap-2.5 px-3 py-2.5 border rounded-lg text-xs font-semibold transition-all duration-150">
@@ -69,25 +69,25 @@
                                 <input type="hidden" name="kategori" :value="kategori">
 
                                 {{-- Sektor Chips --}}
-                                <div x-show="kategori === 'sektor'" x-transition.duration.150ms class="border-t border-gray-100 pt-3">
+                                <div x-show="kategori === 'sektor'" x-transition.duration.150ms class="border-t border-gray-100 pt-3 mt-1">
                                     <label class="block text-[10px] font-semibold text-gray-400 mb-2 uppercase tracking-widest">Pilih Sektor</label>
-                                    <div class="flex flex-wrap gap-1.5">
+                                    <div class="flex flex-wrap gap-2">
                                         @foreach ($sektorList as $s)
                                             <button type="button" @click="selectNilai('{{ $s }}')"
                                                 :class="nilai === '{{ $s }}' ? 'bg-gold text-navy border-gold font-bold shadow-sm' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-gold/60 hover:bg-amber-50'"
-                                                class="px-2.5 py-1 border rounded-md text-[11px] font-medium transition-all duration-150 cursor-pointer">{{ $s }}</button>
+                                                class="px-2.5 py-1.5 border rounded-md text-[11px] font-medium transition-all duration-150 cursor-pointer">{{ $s }}</button>
                                         @endforeach
                                     </div>
                                 </div>
 
                                 {{-- Kebutuhan Chips --}}
-                                <div x-show="kategori === 'kebutuhan'" x-transition.duration.150ms class="border-t border-gray-100 pt-3">
+                                <div x-show="kategori === 'kebutuhan'" x-transition.duration.150ms class="border-t border-gray-100 pt-3 mt-1">
                                     <label class="block text-[10px] font-semibold text-gray-400 mb-2 uppercase tracking-widest">Pilih Kebutuhan</label>
-                                    <div class="flex flex-wrap gap-1.5">
+                                    <div class="flex flex-wrap gap-2">
                                         @foreach ($kebutuhanList as $k)
                                             <button type="button" @click="selectNilai('{{ $k }}')"
                                                 :class="nilai === '{{ $k }}' ? 'bg-gold text-navy border-gold font-bold shadow-sm' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-gold/60 hover:bg-amber-50'"
-                                                class="px-2.5 py-1 border rounded-md text-[11px] font-medium transition-all duration-150 cursor-pointer">{{ $k }}</button>
+                                                class="px-2.5 py-1.5 border rounded-md text-[11px] font-medium transition-all duration-150 cursor-pointer">{{ $k }}</button>
                                         @endforeach
                                     </div>
                                 </div>
@@ -95,19 +95,19 @@
 
                                 {{-- Counter badge --}}
                                 <div x-show="targetCount !== null" x-transition.duration.150ms
-                                    class="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2.5 flex items-center space-x-2.5">
+                                    class="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2.5 flex items-center space-x-2.5 mt-1">
                                     <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                                         <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     </div>
                                     <div>
-                                        <p class="text-[10px] text-emerald-600 font-semibold uppercase tracking-wider">Target Penerima</p>
-                                        <p class="text-lg font-bold text-emerald-700 leading-tight"><span x-text="targetCount"></span> <span class="text-sm font-medium">kontak</span></p>
+                                        <p class="text-[10px] text-emerald-600 font-semibold uppercase tracking-wider">Total Kontak</p>
+                                        <p class="text-lg font-bold text-emerald-700 leading-tight"><span x-text="targetCount"></span> <span class="text-xs font-medium text-emerald-600/80">penerima</span></p>
                                     </div>
                                 </div>
 
                                 {{-- Empty state --}}
-                                <div x-show="targetCount === null" class="rounded-lg bg-gray-50 border border-dashed border-gray-200 py-3 px-3 text-center">
-                                    <p class="text-[11px] text-gray-400">Pilih kategori di atas untuk melihat jumlah target</p>
+                                <div x-show="targetCount === null" class="rounded-lg bg-gray-50 border border-dashed border-gray-200 py-3 px-3 text-center mt-1">
+                                    <p class="text-[11px] text-gray-500 font-medium">Pilih kategori spesifik untuk melihat jumlah target pesan</p>
                                 </div>
                             </div>
                         </div>
@@ -120,15 +120,15 @@
                             </div>
                             <div class="p-3 flex flex-col flex-1 min-h-0">
                                 <div class="rounded-xl overflow-hidden border border-gray-200 shadow-sm flex flex-col flex-1 min-h-0">
-                                    <div class="px-3 py-2 flex items-center space-x-2.5 flex-shrink-0" style="background-color: #075E54;">
-                                        <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                                            <svg class="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                    <div class="px-3 py-2 flex items-center gap-3 flex-shrink-0" style="background-color: #075E54;">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: rgba(255,255,255,0.2);">
+                                            <svg class="w-5 h-5" style="color: rgba(255,255,255,0.8);" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-white text-[11px] font-semibold leading-tight truncate">[Nama PIC]</p>
-                                            <p class="text-[9px]" style="color: #b2dfdb;">online</p>
+                                            <p class="text-white text-[12px] font-semibold leading-tight truncate">[Nama PIC]</p>
+                                            <p class="text-[10px]" style="color: #b2dfdb;">online</p>
                                         </div>
-                                        <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                        <svg class="w-4 h-4" style="color: rgba(255,255,255,0.6);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                                     </div>
                                     <div class="px-3 py-3 flex-1 overflow-y-auto" style="background-color: #ECE5DD;">
                                         <div class="flex justify-center mb-2">

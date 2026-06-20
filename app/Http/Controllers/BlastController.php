@@ -85,6 +85,9 @@ class BlastController extends Controller
             $pesanAdmin = $request->pesan;
             $pesanAdmin = str_replace('{nama}', $client->nama_klien, $pesanAdmin);
             $pesanAdmin = str_replace('{pic}', $client->nama_pic ?? 'Bapak/Ibu', $pesanAdmin);
+            
+            // Hapus karakter ENTER (newline) karena API WhatsApp melarang baris baru di dalam variabel template
+            $pesanAdmin = trim(preg_replace('/\s+/', ' ', $pesanAdmin));
 
             // Kirim via REST API Twilio menggunakan Content Template
             // {{1}} = Nama klien/PIC, {{2}} = Isi pesan bebas dari admin
@@ -102,6 +105,7 @@ class BlastController extends Controller
                     ]);
 
                 if ($response->successful()) {
+                    \Illuminate\Support\Facades\Log::info('Twilio Success Response: ' . $response->body());
                     $berhasil++;
                     $client->update([
                         'blast_status' => 'Terkirim',

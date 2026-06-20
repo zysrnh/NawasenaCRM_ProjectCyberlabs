@@ -1,0 +1,1 @@
+<?php require 'vendor/autoload.php'; $app = require_once 'bootstrap/app.php'; $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap(); $sid = env('TWILIO_SID'); $token = env('TWILIO_AUTH_TOKEN'); $csid = env('TWILIO_CONTENT_SID'); $resp = Illuminate\Support\Facades\Http::withBasicAuth($sid, $token)->get('https://content.twilio.com/v1/Content/'.$csid); echo $resp->body();
