@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -28,13 +29,15 @@ class ClientController extends Controller
 
         $data = $request->all();
         
-        // Handle "Lainnya" text inputs
+        // Handle "Lainnya" text inputs — simpan ke kategoris juga biar muncul di dropdown berikutnya
         if ($data['sektor_bisnis'] === 'Lainnya' && !empty($data['sektor_bisnis_lainnya'])) {
             $data['sektor_bisnis'] = $data['sektor_bisnis_lainnya'];
+            Kategori::firstOrCreate(['tipe' => 'sektor', 'nama' => $data['sektor_bisnis']]);
         }
         
         if ($data['kebutuhan_utama'] === 'Lainnya' && !empty($data['kebutuhan_utama_lainnya'])) {
             $data['kebutuhan_utama'] = $data['kebutuhan_utama_lainnya'];
+            Kategori::firstOrCreate(['tipe' => 'kebutuhan', 'nama' => $data['kebutuhan_utama']]);
         }
 
         if ($data['sumber_info'] === 'Lainnya' && !empty($data['sumber_info_lainnya'])) {

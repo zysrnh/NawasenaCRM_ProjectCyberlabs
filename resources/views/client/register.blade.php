@@ -114,11 +114,9 @@
                     <label for="sektor_bisnis" class="block text-sm font-medium text-navy mb-1">Sektor / Industri Bisnis <span class="text-red-500">*</span></label>
                     <select id="sektor_bisnis" name="sektor_bisnis" x-model="sektor" required class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none bg-white">
                         <option value="" disabled>Pilih Sektor Bisnis...</option>
-                        <option value="IT">Teknologi & IT</option>
-                        <option value="F&B">Food & Beverage (F&B)</option>
-                        <option value="Manufaktur">Manufaktur</option>
-                        <option value="Kesehatan">Kesehatan & Medis</option>
-                        <option value="Pendidikan">Pendidikan</option>
+                        <template x-for="item in sektorOptions" :key="item">
+                            <option :value="item" x-text="item"></option>
+                        </template>
                         <option value="Lainnya">Lain-lain (Isi sendiri)</option>
                     </select>
                     <div x-show="sektor === 'Lainnya'" x-transition.duration.200ms class="mt-2">
@@ -130,11 +128,9 @@
                     <label for="kebutuhan_utama" class="block text-sm font-medium text-navy mb-1">Kebutuhan Utama Layanan <span class="text-red-500">*</span></label>
                     <select id="kebutuhan_utama" name="kebutuhan_utama" x-model="kebutuhan" required class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none bg-white">
                         <option value="" disabled>Pilih Kebutuhan Layanan...</option>
-                        <option value="Pengembangan Website / Web App">Pengembangan Website / Web App</option>
-                        <option value="Pengembangan Aplikasi Mobile">Pengembangan Aplikasi Mobile</option>
-                        <option value="Desain UI/UX & Branding">Desain UI/UX & Branding</option>
-                        <option value="Konsultasi IT & Sistem Bisnis">Konsultasi IT & Sistem Bisnis</option>
-                        <option value="Digital Marketing">Digital Marketing</option>
+                        <template x-for="item in kebutuhanOptions" :key="item">
+                            <option :value="item" x-text="item"></option>
+                        </template>
                         <option value="Lainnya">Lain-lain (Isi sendiri)</option>
                     </select>
                     <div x-show="kebutuhan === 'Lainnya'" x-transition.duration.200ms class="mt-2">
@@ -185,7 +181,23 @@
             return {
                 sektor: '{{ old('sektor_bisnis', '') }}',
                 kebutuhan: '{{ old('kebutuhan_utama', '') }}',
-                sumber: '{{ old('sumber_info', '') }}'
+                sumber: '{{ old('sumber_info', '') }}',
+                sektorOptions: [],
+                kebutuhanOptions: [],
+
+                init() {
+                    fetch('/api/kategori')
+                        .then(res => res.json())
+                        .then(data => {
+                            this.sektorOptions = data.sektor || [];
+                            this.kebutuhanOptions = data.kebutuhan || [];
+                        })
+                        .catch(() => {
+                            // Fallback hardcoded jika API gagal
+                            this.sektorOptions = ['IT', 'F&B', 'Manufaktur', 'Kesehatan', 'Pendidikan'];
+                            this.kebutuhanOptions = ['Pengembangan Website / Web App', 'Pengembangan Aplikasi Mobile', 'Desain UI/UX & Branding', 'Konsultasi IT & Sistem Bisnis', 'Digital Marketing'];
+                        });
+                }
             }
         }
     </script>

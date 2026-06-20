@@ -29,9 +29,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/blast', [\App\Http\Controllers\BlastController::class, 'send'])->name('admin.blast.send');
     Route::get('/admin/blast/count', [\App\Http\Controllers\BlastController::class, 'getTargetCount'])->name('admin.blast.count');
 
+    // Kelola Kategori
+    Route::get('/admin/kategori', [\App\Http\Controllers\KategoriController::class, 'index'])->name('admin.kategori.index');
+    Route::post('/admin/kategori', [\App\Http\Controllers\KategoriController::class, 'store'])->name('admin.kategori.store');
+    Route::delete('/admin/kategori/{kategori}', [\App\Http\Controllers\KategoriController::class, 'destroy'])->name('admin.kategori.destroy');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Public API: kategori list for registration form
+Route::get('/api/kategori', [\App\Http\Controllers\KategoriController::class, 'apiList'])->name('api.kategori');
 
 require __DIR__.'/auth.php';
