@@ -238,7 +238,7 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         $client->delete();
-        return back()->with('success', 'Data klien berhasil dihapus.');
+        return redirect()->route('admin.clients.index')->with('success', 'Data klien berhasil dihapus.');
     }
 
     /**
@@ -254,5 +254,133 @@ class ClientController extends Controller
         Client::whereIn('id', $request->ids)->delete();
 
         return back()->with('success', count($request->ids) . ' data klien berhasil dihapus.');
+    }
+
+    /**
+     * Admin: Edit client view
+     */
+    public function edit(Client $client)
+    {
+        $sektorList = Kategori::where('tipe', 'sektor')->orderBy('nama')->pluck('nama');
+        $kebutuhanList = Kategori::where('tipe', 'kebutuhan')->orderBy('nama')->pluck('nama');
+        
+        // Extract country code if starts with +
+        $kode_negara = '+62';
+        $nomor_telepon = $client->nomor_telepon;
+        if (preg_match('/^(\+\d{1,3})(.*)$/', $client->nomor_telepon, $matches)) {
+            $kode_negara = $matches[1];
+            $nomor_telepon = ltrim($matches[2], '0'); // remove leading zero
+        } elseif (str_starts_with($client->nomor_telepon, '0')) {
+            $nomor_telepon = ltrim($client->nomor_telepon, '0');
+        }
+
+        return view('admin.clients.edit', compact('client', 'sektorList', 'kebutuhanList', 'kode_negara', 'nomor_telepon'));
+    }
+
+    /**
+     * Admin: Update client
+     */
+    public function update(Request $request, Client $client)
+    {
+        $request->validate([
+            'nama_klien' => 'required|string|max:255',
+            'nama_pic' => 'nullable|string|max:255',
+            'jabatan_pic' => 'nullable|string|max:255',
+            'nomor_telepon' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+            'alamat' => 'required|string',
+            'sektor_bisnis' => 'required|string',
+            'kebutuhan_utama' => 'required|string',
+            'sumber_info' => 'required|string',
+        ]);
+
+        $data = $request->except(['_method', '_token']);
+        
+        if ($data['sektor_bisnis'] === 'Lainnya' && $request->filled('sektor_bisnis_lainnya')) {
+            $data['sektor_bisnis'] = $request->sektor_bisnis_lainnya;
+            Kategori::firstOrCreate(['tipe' => 'sektor', 'nama' => $data['sektor_bisnis']]);
+        }
+        
+        if ($data['kebutuhan_utama'] === 'Lainnya' && $request->filled('kebutuhan_utama_lainnya')) {
+            $data['kebutuhan_utama'] = $request->kebutuhan_utama_lainnya;
+            Kategori::firstOrCreate(['tipe' => 'kebutuhan', 'nama' => $data['kebutuhan_utama']]);
+        }
+
+        if ($data['sumber_info'] === 'Lainnya' && $request->filled('sumber_info_lainnya')) {
+            $data['sumber_info'] = $request->sumber_info_lainnya;
+        }
+
+        if ($request->has('kode_negara')) {
+            $data['nomor_telepon'] = $request->kode_negara . ltrim($data['nomor_telepon'], '0');
+        }
+
+        $client->update($data);
+
+        return redirect()->route('admin.clients.index')->with('success', 'Data klien berhasil diperbarui.');
+    }
+
+    /**
+     * Admin: Send individual WhatsApp
+     */
+    public function sendIndividualWa(Request $request, Client $client)
+    {
+        $request->validate([
+            'pesan_blast' => 'required|string',
+        ]);
+
+        $twilioSid = env('TWILIO_SID');
+        $twilioToken = env('TWILIO_AUTH_TOKEN');
+        $twilioFrom = env('TWILIO_FROM_NUMBER'); 
+        $contentSid = env('TWILIO_CONTENT_SID'); 
+
+        if (!$twilioSid || !$twilioToken || !$twilioFrom || !$contentSid) {
+            return back()->with('error', 'Kredensial API Twilio belum lengkap. Hubungi Administrator.');
+        }
+
+        $nomor = $client->nomor_telepon;
+        if (str_starts_with($nomor, '0')) {
+            $nomor = '+62' . substr($nomor, 1);
+        } elseif (str_starts_with($nomor, '62')) {
+            $nomor = '+' . $nomor;
+        } elseif (!str_starts_with($nomor, '+')) {
+            $nomor = '+' . $nomor;
+        }
+        $to = 'whatsapp:' . $nomor;
+
+        $pesanAdmin = $request->pesan_blast;
+        $pesanAdmin = str_replace('{nama}', $client->nama_klien, $pesanAdmin);
+        $pesanAdmin = str_replace('{pic}', $client->nama_pic ?? 'Bapak/Ibu', $pesanAdmin);
+        $pesanAdmin = trim(preg_replace('/\s+/', ' ', $pesanAdmin));
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withBasicAuth($twilioSid, $twilioToken)
+                ->asForm()
+                ->post("https://api.twilio.com/2010-04-01/Accounts/{$twilioSid}/Messages.json", [
+                    'From' => $twilioFrom,
+                    'To' => $to,
+                    'ContentSid' => $contentSid,
+                    'ContentVariables' => json_encode([
+                        '1' => $client->nama_pic ?? $client->nama_klien,
+                        '2' => $pesanAdmin,
+                    ]),
+                ]);
+
+            if ($response->successful()) {
+                \Illuminate\Support\Facades\Log::info('Twilio Success Response (Send Individual): ' . $response->body());
+                $client->update([
+                    'blast_status' => 'Terkirim',
+                    'last_blasted_at' => now(),
+                ]);
+                return back()->with('success', 'Pesan WhatsApp berhasil dikirim ke ' . $client->nama_klien);
+            } else {
+                \Illuminate\Support\Facades\Log::error('Twilio Error Body (Send Individual): ' . $response->body());
+                $client->update(['blast_status' => 'Gagal', 'last_blasted_at' => now()]);
+                return back()->with('error', 'Pesan WhatsApp gagal dikirim. Silakan cek Log.');
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error System Blast Twilio: ' . $e->getMessage());
+            $client->update(['blast_status' => 'Gagal', 'last_blasted_at' => now()]);
+            return back()->with('error', 'Sistem pengiriman error: ' . $e->getMessage());
+        }
     }
 }
