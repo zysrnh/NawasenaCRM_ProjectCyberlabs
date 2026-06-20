@@ -3,52 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi Klien - Nawasena CRM</title>
-    <meta name="description" content="Form registrasi klien Nawasena. Daftarkan bisnis Anda untuk mendapatkan layanan terbaik dari kami.">
+    <title>Registrasi Klien - Nawasena</title>
+    <meta name="description" content="Form registrasi klien Nawasena.">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
+        body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; color: #263145; }
+        .text-brand-gray { color: #263145; }
+        .bg-brand-gray { background-color: #263145; }
+        .text-brand-gold { color: #FAB95B; }
+        .bg-brand-gold { background-color: #FAB95B; }
+        .border-brand-gold { border-color: #FAB95B; }
+        
+        .wizard-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.375rem;
+            background-color: #F8FAFC;
+            font-size: 0.875rem;
+            color: #475569;
+            transition: all 0.2s ease;
         }
-        .form-group { animation: fadeInUp 0.5s ease-out both; }
-        .form-group:nth-child(1) { animation-delay: 0.05s; }
-        .form-group:nth-child(2) { animation-delay: 0.10s; }
-        .form-group:nth-child(3) { animation-delay: 0.15s; }
-        .form-group:nth-child(4) { animation-delay: 0.20s; }
-        .form-group:nth-child(5) { animation-delay: 0.25s; }
-        .form-group:nth-child(6) { animation-delay: 0.30s; }
-        .form-group:nth-child(7) { animation-delay: 0.35s; }
-        .form-group:nth-child(8) { animation-delay: 0.40s; }
-        .form-group:nth-child(9) { animation-delay: 0.45s; }
-        input, select, textarea { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-        .btn-submit { transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease; }
-        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(250, 185, 91, 0.3); }
-        .btn-submit:active { transform: translateY(0); box-shadow: none; }
+        .wizard-input::placeholder { color: #94A3B8; }
+        .wizard-input:focus {
+            outline: none;
+            border-color: #FAB95B;
+            box-shadow: 0 0 0 3px rgba(250, 185, 91, 0.2);
+            background-color: #FFFFFF;
+        }
+        
+        /* Custom Radio Button for Sektor */
+        .radio-custom {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .radio-custom input {
+            display: none;
+        }
+        .radio-custom .checkmark {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 1px solid #CBD5E1;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .radio-custom input:checked + .checkmark {
+            border-color: #FAB95B;
+        }
+        .radio-custom input:checked + .checkmark::after {
+            content: '';
+            width: 0.625rem;
+            height: 0.625rem;
+            background-color: #FAB95B;
+            border-radius: 50%;
+        }
+
+        .max-w-custom { max-width: 1100px; }
+        .max-w-wizard { max-width: 700px; }
+        .text-wizard-label { font-size: 11px; white-space: nowrap; margin-top: 8px; }
+        .text-heading { font-size: 24px; }
+        .text-tiny { font-size: 10px; }
+        .min-h-card { min-height: 500px; }
+        .w-left-panel { width: 35%; }
+        .w-right-panel { width: 65%; }
+        .watermark-img { width: 140%; max-width: none; opacity: 0.06; filter: grayscale(100%); }
     </style>
 </head>
-<body class="bg-nw-light text-gray-900 antialiased" x-data="clientForm()">
+<body x-data="clientForm()">
 
-    <!-- Top accent bar -->
-    <div class="h-1 bg-gold w-full"></div>
+    <!-- Topbar Header -->
+    <header class="bg-white border-b border-gray-100 shadow-sm px-6 py-4 flex items-center justify-between relative z-20">
+        <img src="{{ asset('img/logo-transparent-color.png') }}" alt="Nawasena Logo" class="h-10 object-contain">
+    </header>
 
-    <div class="min-h-screen flex flex-col items-center px-4 py-8 sm:py-12">
-
-        <!-- Header -->
-        <div class="mb-6 text-center" style="animation: fadeInUp 0.4s ease-out both;">
-            <img src="{{ asset('img/nawasena-logo-white.png') }}" alt="Nawasena" class="h-10 sm:h-12 mx-auto mb-4 bg-navy p-2 rounded">
-            <h1 class="text-2xl sm:text-3xl font-bold text-navy tracking-tight">Registrasi Klien</h1>
-            <p class="text-nw-body mt-1 text-sm sm:text-base">Lengkapi data di bawah untuk mendaftar sebagai klien Nawasena</p>
+    <div class="max-w-custom mx-auto pt-6 pb-6 px-4">
+        
+        <!-- Wizard Progress Bar -->
+        <div class="relative flex justify-between items-center mb-8 max-w-wizard mx-auto">
+            <!-- Background Line -->
+            <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-0.5 bg-gray-200 z-0"></div>
+            <!-- Active Line -->
+            <div class="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-brand-gold z-0 transition-all duration-500 ease-in-out" 
+                 :style="'width: ' + ((step - 1) * 50) + '%'"></div>
+            
+            <!-- Step 1 -->
+            <div class="relative z-10 flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300"
+                     :class="step >= 1 ? 'bg-brand-gold text-white shadow-md' : 'bg-white border-2 border-gray-200 text-gray-400'">
+                    <span x-show="step === 1">1</span>
+                    <svg x-show="step > 1" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <span class="absolute top-10 text-wizard-label font-semibold" :class="step >= 1 ? 'text-brand-gold' : 'text-gray-400'">Biodata & Kontak</span>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="relative z-10 flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300"
+                     :class="step >= 2 ? 'bg-brand-gold text-white shadow-md' : 'bg-white border-2 border-gray-200 text-gray-400'">
+                    <span x-show="step <= 2">2</span>
+                    <svg x-show="step > 2" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <span class="absolute top-10 text-wizard-label font-semibold" :class="step >= 2 ? 'text-brand-gold' : 'text-gray-400'">Alamat & Sektor Bisnis</span>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="relative z-10 flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300"
+                     :class="step >= 3 ? 'bg-brand-gold text-white shadow-md' : 'bg-white border-2 border-gray-200 text-gray-400'">3</div>
+                <span class="absolute top-10 text-wizard-label font-semibold" :class="step >= 3 ? 'text-brand-gold' : 'text-gray-400'">Mengetahui Kami</span>
+            </div>
         </div>
 
-        <!-- Validation Errors -->
         @if ($errors->any())
-            <div class="w-full max-w-2xl mb-4 p-4 bg-red-50 text-red-700 border border-red-200 rounded text-sm" style="animation: fadeInUp 0.3s ease-out both;">
-                <p class="font-semibold mb-1">Terdapat kesalahan pada isian Anda:</p>
-                <ul class="list-disc list-inside space-y-0.5">
+            <div class="mb-4 p-3 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm">
+                <p class="font-semibold mb-1">Terdapat kesalahan:</p>
+                <ul class="list-disc list-inside">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -56,129 +132,173 @@
             </div>
         @endif
 
-        <!-- Form Card -->
-        <div class="w-full max-w-2xl bg-white border border-gray-200 rounded overflow-hidden">
-
-            <!-- Card header -->
-            <div class="px-5 sm:px-8 py-5 border-b border-gray-200 bg-navy">
-                <h2 class="font-semibold text-white text-sm uppercase tracking-wider">Data Klien</h2>
+        <!-- Main Form Card -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 flex overflow-hidden min-h-card">
+            
+            <!-- Left Watermark Area (Hidden on mobile) -->
+            <div class="hidden md:flex w-left-panel border-r border-gray-100 items-center justify-center relative overflow-hidden bg-white">
+                <img src="{{ asset('img/nawasena-logo-bg-white.jpg-removebg-preview.png') }}" class="watermark-img object-contain select-none" alt="Watermark">
             </div>
 
-            <form method="POST" action="{{ route('client.store') }}" class="px-5 sm:px-8 py-6 space-y-5">
-                @csrf
+            <!-- Right Form Area -->
+            <div class="w-full md:w-right-panel p-6 md:p-10 relative">
+                <form method="POST" action="{{ route('client.store') }}" id="mainForm" class="h-full flex flex-col justify-center">
+                    @csrf
+                    
+                    <!-- STEP 1: Biodata & Kontak -->
+                    <div x-show="step === 1" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                        <h2 class="text-heading font-light text-brand-gray mb-1">MASUKKAN <span class="font-bold text-brand-gray">BIODATA & KONTAK</span> ANDA</h2>
+                        <p class="text-sm text-gray-500 mb-6">Lengkapi data diri atau perusahaan Anda untuk mulai mengakses seluruh layanan yang tersedia.</p>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <input type="text" name="nama_klien" value="{{ old('nama_klien') }}" required class="wizard-input" placeholder="Nama Lengkap / Nama Perusahaan">
+                            </div>
+                            <div>
+                                <input type="text" name="nama_pic" value="{{ old('nama_pic') }}" class="wizard-input" placeholder="Nama PIC (Person in Charge)">
+                                <p class="text-tiny text-gray-400 mt-0.5 italic">Wajib diisi jika Anda adalah perusahaan</p>
+                            </div>
+                            <div>
+                                <input type="text" name="jabatan_pic" value="{{ old('jabatan_pic') }}" class="wizard-input" placeholder="Jabatan PIC">
+                            </div>
+                            <div class="flex relative">
+                                <select name="kode_negara" class="bg-brand-gray text-white pl-2 pr-6 rounded-l-lg border border-brand-gray text-sm font-medium focus:outline-none focus:ring-0 outline-none appearance-none cursor-pointer relative z-10 w-[76px] text-center">
+                                    <option value="+62">+62</option>
+                                    <option value="+60">+60</option>
+                                    <option value="+65">+65</option>
+                                    <option value="+66">+66</option>
+                                    <option value="+63">+63</option>
+                                    <option value="+84">+84</option>
+                                    <option value="+1">+1</option>
+                                    <option value="+44">+44</option>
+                                    <option value="+61">+61</option>
+                                    <option value="+81">+81</option>
+                                    <option value="+82">+82</option>
+                                    <option value="+86">+86</option>
+                                    <option value="+91">+91</option>
+                                </select>
+                                <div class="absolute left-[52px] top-0 bottom-0 flex items-center pointer-events-none z-20">
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                                <input type="text" name="nomor_telepon" value="{{ old('nomor_telepon') }}" required class="wizard-input !rounded-l-none !border-l-0 w-full" placeholder="Contoh: 8123456789">
+                            </div>
+                            <div>
+                                <input type="email" name="email" value="{{ old('email') }}" required class="wizard-input" placeholder="Email">
+                                <p class="text-tiny text-gray-400 mt-0.5 italic">Gunakan email aktif untuk mendapatkan newsletter/informasi</p>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <label for="nama_klien" class="block text-sm font-medium text-navy mb-1">Nama Lengkap Klien / Nama Perusahaan <span class="text-red-500">*</span></label>
-                    <input type="text" id="nama_klien" name="nama_klien" value="{{ old('nama_klien') }}" required class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none placeholder-gray-400" placeholder="Contoh: PT. Nawasena Nusantara">
-                </div>
-
-                <div class="form-group grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="nama_pic" class="block text-sm font-medium text-navy mb-1">Nama PIC (Person in Charge)</label>
-                        <p class="text-xs text-nw-body mb-1.5">Wajib jika atas nama Perusahaan</p>
-                        <input type="text" id="nama_pic" name="nama_pic" value="{{ old('nama_pic') }}" class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none placeholder-gray-400" placeholder="Contoh: Budi Santoso">
+                        <div class="mt-8 flex justify-between items-center">
+                            <a href="{{ url('/') }}" class="text-sm font-medium text-brand-gray flex items-center hover:text-brand-gold transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Kembali
+                            </a>
+                            <button type="button" @click="nextStep()" class="bg-brand-gold hover:bg-yellow-500 text-brand-gray font-semibold text-sm px-6 py-2.5 rounded shadow-sm transition-all flex items-center">
+                                Selanjutnya <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <label for="jabatan_pic" class="block text-sm font-medium text-navy mb-1">Jabatan PIC</label>
-                        <p class="text-xs text-nw-body mb-1.5">Misal: Direktur, Legal Manager, HRD</p>
-                        <input type="text" id="jabatan_pic" name="jabatan_pic" value="{{ old('jabatan_pic') }}" class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none placeholder-gray-400" placeholder="Contoh: Direktur">
+
+                    <!-- STEP 2: Alamat & Sektor Bisnis -->
+                    <div x-show="step === 2" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                        <h2 class="text-heading font-light text-brand-gray mb-1">MASUKKAN <span class="font-bold text-brand-gray">ALAMAT & SEKTOR BISNIS</span></h2>
+                        <p class="text-sm text-gray-500 mb-5">Lengkapi alamat dan profil bisnis Anda untuk mempermudah proses registrasi.</p>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <textarea name="alamat" required rows="3" class="wizard-input resize-none" placeholder="Alamat Lengkap Domisili / Perusahaan">{{ old('alamat') }}</textarea>
+                            </div>
+
+                            <div class="pt-2">
+                                <h3 class="text-sm font-bold text-brand-gray uppercase tracking-wider mb-2">Sektor Bisnis</h3>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                                    <template x-for="item in sektorOptions" :key="item">
+                                        <label class="radio-custom text-sm text-gray-600">
+                                            <input type="radio" name="sektor_bisnis" :value="item" x-model="sektor" required>
+                                            <span class="checkmark"></span>
+                                            <span x-text="item"></span>
+                                        </label>
+                                    </template>
+                                    <label class="radio-custom text-sm text-gray-600">
+                                        <input type="radio" name="sektor_bisnis" value="Lainnya" x-model="sektor" required>
+                                        <span class="checkmark"></span>
+                                        Lainnya
+                                    </label>
+                                </div>
+                                <div x-show="sektor === 'Lainnya'" x-transition class="mb-3">
+                                    <input type="text" name="sektor_bisnis_lainnya" class="wizard-input border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent px-0 focus:ring-0 focus:border-brand-gold" placeholder="Sebutkan sektor bisnis Anda...">
+                                </div>
+                            </div>
+                            
+                            <div class="pt-1">
+                                <h3 class="text-sm font-bold text-brand-gray uppercase tracking-wider mb-2">Kebutuhan Layanan</h3>
+                                <select name="kebutuhan_utama" x-model="kebutuhan" required class="wizard-input appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23263145%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_1rem_center]">
+                                    <option value="" disabled>Pilih Kebutuhan Anda...</option>
+                                    <template x-for="item in kebutuhanOptions" :key="item">
+                                        <option :value="item" x-text="item"></option>
+                                    </template>
+                                    <option value="Lainnya">Lain-lain (Isi sendiri)</option>
+                                </select>
+                                <div x-show="kebutuhan === 'Lainnya'" x-transition class="mt-2">
+                                    <input type="text" name="kebutuhan_utama_lainnya" class="wizard-input border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent px-0 focus:ring-0 focus:border-brand-gold" placeholder="Sebutkan kebutuhan layanan Anda...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-between items-center">
+                            <button type="button" @click="prevStep()" class="text-sm font-medium text-brand-gray flex items-center hover:text-brand-gold transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Kembali
+                            </button>
+                            <button type="button" @click="nextStep()" class="bg-brand-gold hover:bg-yellow-500 text-brand-gray font-semibold text-sm px-6 py-2.5 rounded shadow-sm transition-all flex items-center">
+                                Selanjutnya <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group border-t border-gray-100"></div>
+                    <!-- STEP 3: Mengetahui Kami -->
+                    <div x-show="step === 3" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                        <h2 class="text-heading font-light text-brand-gray mb-1">DARI MANA ANDA <span class="font-bold text-brand-gray">MENGETAHUI</span> KAMI?</h2>
+                        <p class="text-sm text-gray-500 mb-6">Bantu kami mengetahui bagaimana Anda menemukan layanan kami.</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <select name="sumber_info" x-model="sumber" required class="wizard-input appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23263145%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-no-repeat bg-[position:right_1rem_center]">
+                                    <option value="" disabled>Pilih Sumber Informasi...</option>
+                                    <option value="Instagram">Instagram</option>
+                                    <option value="LinkedIn">LinkedIn</option>
+                                    <option value="Rekomendasi Teman">Rekomendasi Teman / Kolega</option>
+                                    <option value="Pencarian Google">Pencarian Google</option>
+                                    <option value="Lainnya">Lain-lain (Isi sendiri)</option>
+                                </select>
+                            </div>
+                            <div x-show="sumber === 'Lainnya'" x-transition class="mt-3">
+                                <input type="text" name="sumber_info_lainnya" class="wizard-input border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent px-0 focus:ring-0 focus:border-brand-gold" placeholder="Sebutkan dari mana Anda tahu kami...">
+                            </div>
+                        </div>
 
-                <div class="form-group grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="nomor_telepon" class="block text-sm font-medium text-navy mb-1">Nomor Telepon / WhatsApp <span class="text-red-500">*</span></label>
-                        <p class="text-xs text-nw-body mb-1.5">Gunakan format +628...</p>
-                        <input type="text" id="nomor_telepon" name="nomor_telepon" value="{{ old('nomor_telepon') }}" required class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none placeholder-gray-400" placeholder="+6281234567890">
+                        <div class="mt-8 flex justify-between items-center">
+                            <button type="button" @click="prevStep()" class="text-sm font-medium text-brand-gray flex items-center hover:text-brand-gold transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Kembali
+                            </button>
+                            <button type="submit" class="bg-brand-gold hover:bg-yellow-500 text-brand-gray font-bold text-sm px-8 py-2.5 rounded shadow-md transition-all flex items-center transform hover:-translate-y-0.5">
+                                Selesai <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-navy mb-1">Alamat Email Utama <span class="text-red-500">*</span></label>
-                        <p class="text-xs text-nw-body mb-1.5">Email aktif untuk info & newsletter</p>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" required class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none placeholder-gray-400" placeholder="email@perusahaan.com">
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="alamat" class="block text-sm font-medium text-navy mb-1">Alamat Domisili / Kantor <span class="text-red-500">*</span></label>
-                    <textarea id="alamat" name="alamat" rows="3" required class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none placeholder-gray-400 resize-none" placeholder="Jalan Raya No. 123, Kota...">{{ old('alamat') }}</textarea>
-                </div>
-
-                <div class="form-group border-t border-gray-100"></div>
-                <div class="form-group">
-                    <h3 class="font-semibold text-navy text-sm uppercase tracking-wider">Informasi Tambahan</h3>
-                </div>
-
-                <div class="form-group">
-                    <label for="sektor_bisnis" class="block text-sm font-medium text-navy mb-1">Sektor / Industri Bisnis <span class="text-red-500">*</span></label>
-                    <select id="sektor_bisnis" name="sektor_bisnis" x-model="sektor" required class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none bg-white">
-                        <option value="" disabled>Pilih Sektor Bisnis...</option>
-                        <template x-for="item in sektorOptions" :key="item">
-                            <option :value="item" x-text="item"></option>
-                        </template>
-                        <option value="Lainnya">Lain-lain (Isi sendiri)</option>
-                    </select>
-                    <div x-show="sektor === 'Lainnya'" x-transition.duration.200ms class="mt-2">
-                        <input type="text" name="sektor_bisnis_lainnya" value="{{ old('sektor_bisnis_lainnya') }}" class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none placeholder-gray-400" placeholder="Sebutkan sektor bisnis Anda...">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="kebutuhan_utama" class="block text-sm font-medium text-navy mb-1">Kebutuhan Utama Layanan <span class="text-red-500">*</span></label>
-                    <select id="kebutuhan_utama" name="kebutuhan_utama" x-model="kebutuhan" required class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none bg-white">
-                        <option value="" disabled>Pilih Kebutuhan Layanan...</option>
-                        <template x-for="item in kebutuhanOptions" :key="item">
-                            <option :value="item" x-text="item"></option>
-                        </template>
-                        <option value="Lainnya">Lain-lain (Isi sendiri)</option>
-                    </select>
-                    <div x-show="kebutuhan === 'Lainnya'" x-transition.duration.200ms class="mt-2">
-                        <input type="text" name="kebutuhan_utama_lainnya" value="{{ old('kebutuhan_utama_lainnya') }}" class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none placeholder-gray-400" placeholder="Sebutkan kebutuhan layanan Anda...">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="sumber_info" class="block text-sm font-medium text-navy mb-1">Dari Mana Anda Mengetahui Kami? <span class="text-red-500">*</span></label>
-                    <select id="sumber_info" name="sumber_info" x-model="sumber" required class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none bg-white">
-                        <option value="" disabled>Pilih Sumber Informasi...</option>
-                        <option value="Instagram">Instagram</option>
-                        <option value="LinkedIn">LinkedIn</option>
-                        <option value="BNI Unity">BNI Unity</option>
-                        <option value="Rekomendasi Teman">Rekomendasi Teman / Kolega</option>
-                        <option value="Pencarian Google">Pencarian Google</option>
-                        <option value="Lainnya">Lain-lain (Isi sendiri)</option>
-                    </select>
-                    <div x-show="sumber === 'Lainnya'" x-transition.duration.200ms class="mt-2">
-                        <input type="text" name="sumber_info_lainnya" value="{{ old('sumber_info_lainnya') }}" class="block w-full px-3 py-2.5 border border-gray-300 rounded text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none placeholder-gray-400" placeholder="Sebutkan dari mana Anda tahu kami...">
-                    </div>
-                </div>
-
-                <div class="form-group pt-4 border-t border-gray-100">
-                    <button type="submit" class="btn-submit w-full px-6 py-3 bg-gold font-semibold text-sm text-navy rounded focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 hover:bg-gold-dark">
-                        KIRIM REGISTRASI
-                    </button>
-                    <p class="text-xs text-nw-body text-center mt-3">Data Anda akan disimpan dan dikelola sesuai kebijakan privasi kami.</p>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
-        <!-- Contact -->
-        <div class="mt-8 text-center" style="animation: fadeInUp 0.5s ease-out 0.5s both;">
-            <div class="inline-flex items-center justify-center space-x-2 text-sm text-nw-body bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-md group">
-                <span>Butuh bantuan? Hubungi kami di</span>
-                <a href="https://wa.me/62811869212" class="inline-flex items-center text-[#25D366] font-semibold transition-colors group-hover:text-[#128C7E]">
-                    <svg class="w-5 h-5 mr-1 animate-pulse" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    +62 811-869-212
-                </a>
-            </div>
-            <p class="text-xs text-gray-400 mt-4">&copy; {{ date('Y') }} Nawasena. All rights reserved.</p>
+        <div class="mt-8 text-center text-xs text-gray-400">
+            Copyright &copy; {{ date('Y') }} Nawasena | Powered by <a href="https://cyberlabs.co.id" class="underline hover:text-brand-gold transition-colors" target="_blank">CyberLabs</a>
         </div>
     </div>
 
     <script>
         function clientForm() {
             return {
+                step: 1,
                 sektor: '{{ old('sektor_bisnis', '') }}',
                 kebutuhan: '{{ old('kebutuhan_utama', '') }}',
                 sumber: '{{ old('sumber_info', '') }}',
@@ -186,17 +306,45 @@
                 kebutuhanOptions: [],
 
                 init() {
+                    @if($errors->any())
+                        this.step = 1;
+                    @endif
+
                     fetch('/api/kategori')
                         .then(res => res.json())
                         .then(data => {
-                            this.sektorOptions = data.sektor || [];
-                            this.kebutuhanOptions = data.kebutuhan || [];
+                            this.sektorOptions = data.sektor || ['Kesehatan', 'Pendidikan', 'Ritel & Perdagangan', 'Kuliner & Food Service', 'Pariwisata & Perhotelan', 'Jasa Profesional', 'Konstruksi & Properti', 'Teknologi Informasi', 'Logistik & Transportasi', 'Manufaktur & Industri'];
+                            this.kebutuhanOptions = data.kebutuhan || ['Pengembangan Website', 'Aplikasi Mobile', 'Desain UI/UX', 'Konsultasi IT', 'Digital Marketing'];
                         })
                         .catch(() => {
-                            // Fallback hardcoded jika API gagal
-                            this.sektorOptions = ['IT', 'F&B', 'Manufaktur', 'Kesehatan', 'Pendidikan'];
+                            this.sektorOptions = ['Kesehatan', 'Pendidikan', 'Ritel & Perdagangan', 'Kuliner & Food Service', 'Pariwisata & Perhotelan', 'Jasa Profesional', 'Konstruksi & Properti', 'Teknologi Informasi', 'Logistik & Transportasi', 'Manufaktur & Industri'];
                             this.kebutuhanOptions = ['Pengembangan Website / Web App', 'Pengembangan Aplikasi Mobile', 'Desain UI/UX & Branding', 'Konsultasi IT & Sistem Bisnis', 'Digital Marketing'];
                         });
+                },
+                
+                nextStep() {
+                    let form = document.getElementById('mainForm');
+                    let currentStepInputs = form.querySelectorAll(`div[x-show="step === ${this.step}"] [required]`);
+                    let allValid = true;
+                    
+                    currentStepInputs.forEach(input => {
+                        if (!input.checkValidity()) {
+                            input.reportValidity();
+                            allValid = false;
+                        }
+                    });
+
+                    if (allValid && this.step < 3) {
+                        this.step++;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                },
+                
+                prevStep() {
+                    if (this.step > 1) {
+                        this.step--;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
                 }
             }
         }

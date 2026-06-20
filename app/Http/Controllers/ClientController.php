@@ -44,6 +44,10 @@ class ClientController extends Controller
             $data['sumber_info'] = $data['sumber_info_lainnya'];
         }
 
+        if ($request->has('kode_negara')) {
+            $data['nomor_telepon'] = $request->kode_negara . ltrim($data['nomor_telepon'], '0');
+        }
+
         $client = Client::create($data);
 
         return redirect()->route('client.success', $client->id);
@@ -98,6 +102,10 @@ class ClientController extends Controller
 
         if ($data['sumber_info'] === 'Lainnya' && $request->filled('sumber_info_lainnya')) {
             $data['sumber_info'] = $request->sumber_info_lainnya;
+        }
+
+        if ($request->has('kode_negara')) {
+            $data['nomor_telepon'] = $request->kode_negara . ltrim($data['nomor_telepon'], '0');
         }
 
         $client = Client::create($data);
