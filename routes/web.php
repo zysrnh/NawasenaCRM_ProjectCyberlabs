@@ -33,6 +33,11 @@ Route::prefix('admin')->group(function () {
             Route::post('/blast', [\App\Http\Controllers\BlastController::class, 'send'])->name('admin.blast.send');
             Route::get('/blast/count', [\App\Http\Controllers\BlastController::class, 'getTargetCount'])->name('admin.blast.count');
 
+            // Email Blast
+            Route::get('/email-blast', [\App\Http\Controllers\EmailBlastController::class, 'index'])->name('admin.email_blast.index');
+            Route::post('/email-blast', [\App\Http\Controllers\EmailBlastController::class, 'send'])->name('admin.email_blast.send');
+            Route::get('/email-blast/count', [\App\Http\Controllers\EmailBlastController::class, 'getTargetCount'])->name('admin.email_blast.count');
+
             // WA Logs (accessible to all admins)
             Route::get('/logs', [\App\Http\Controllers\WhatsappLogController::class, 'index'])->name('admin.logs.index');
 

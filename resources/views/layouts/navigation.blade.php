@@ -16,6 +16,10 @@
                         class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out {{ request()->routeIs('admin.blast.*') ? 'border-gold text-navy' : 'border-transparent text-gray-500 hover:text-navy hover:border-gray-300' }}">
                         WhatsApp Blast
                     </a>
+                    <a href="{{ route('admin.email_blast.index') }}"
+                        class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out {{ request()->routeIs('admin.email_blast.*') ? 'border-gold text-navy' : 'border-transparent text-gray-500 hover:text-navy hover:border-gray-300' }}">
+                        Email Blast
+                    </a>
                     @if(auth()->user()->is_admin)
                     <a href="{{ route('admin.users.index') }}"
                         class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out {{ request()->routeIs('admin.users.*') ? 'border-gold text-navy' : 'border-transparent text-gray-500 hover:text-navy hover:border-gray-300' }}">
@@ -60,6 +64,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.blast.index')" :active="request()->routeIs('admin.blast.*')" class="text-gray-300">
                 WhatsApp Blast
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.email_blast.index')" :active="request()->routeIs('admin.email_blast.*')" class="text-gray-300">
+                Email Blast
             </x-responsive-nav-link>
             @if(auth()->user()->is_admin)
             <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="text-gray-300">
