@@ -21,6 +21,7 @@ Route::prefix('admin')->group(function () {
 
         Route::middleware('auth')->group(function () {
             // Client management (accessible to User & Admin)
+            Route::get('/clients/export', [ClientController::class, 'export'])->name('admin.clients.export');
             Route::get('/clients', [ClientController::class, 'index'])->name('admin.clients.index');
             Route::get('/clients/create', [ClientController::class, 'adminCreate'])->name('admin.clients.create');
             Route::post('/clients/store', [ClientController::class, 'adminStore'])->name('admin.clients.store');
@@ -31,6 +32,9 @@ Route::prefix('admin')->group(function () {
             Route::get('/blast', [\App\Http\Controllers\BlastController::class, 'index'])->name('admin.blast.index');
             Route::post('/blast', [\App\Http\Controllers\BlastController::class, 'send'])->name('admin.blast.send');
             Route::get('/blast/count', [\App\Http\Controllers\BlastController::class, 'getTargetCount'])->name('admin.blast.count');
+
+            // WA Logs (accessible to all admins)
+            Route::get('/logs', [\App\Http\Controllers\WhatsappLogController::class, 'index'])->name('admin.logs.index');
 
         // Fitur khusus Administrator
         Route::middleware('is_admin')->group(function () {

@@ -24,4 +24,9 @@ class Client extends Model
         'blast_status',
         'last_blasted_at',
     ];
+
+    public function whatsappLogs()
+    {
+        return $this->hasMany(WhatsappLog::class)->latest();
+    }
 }

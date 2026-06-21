@@ -186,7 +186,7 @@
                                     <svg class="w-4 h-4 text-sky-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     <div class="flex-1">
                                         <p class="text-[11px] text-sky-800 leading-relaxed">
-                                            <strong>"Halo [Nama],"</strong> dan <strong>"Salam, Tim Nawasena Cyberlabs"</strong> otomatis ditambahkan. Anda bisa menyisipkan nama di dalam pesan utama dengan mengetik <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100">{nama}</code> atau <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100">{pic}</code>.
+                                            <strong>"Halo [Nama],"</strong> otomatis ditambahkan di awal. Anda bisa menyisipkan nama di dalam pesan utama dengan mengetik <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100">{nama}</code> atau <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100">{pic}</code>. Jangan lupa tambahkan salam/penutup di akhir pesan jika perlu.
                                         </p>
                                     </div>
                                     <button type="button" @click="resetPesan()" class="text-[10px] bg-white border border-sky-200 text-sky-600 px-2 py-1 rounded hover:bg-sky-100 transition-colors flex-shrink-0 shadow-sm font-semibold">
@@ -273,7 +273,7 @@
                 get previewText() {
                     let isi = this.pesan && this.pesan.trim() ? this.pesan : '...';
                     isi = isi.replace(/\{nama\}/gi, '[Nama Klien]').replace(/\{pic\}/gi, '[Nama PIC]');
-                    return 'Halo [Nama PIC],\n\n' + isi + '\n\nSalam,\nTim Nawasena Cyberlabs';
+                    return 'Halo [Nama PIC],\n\n' + isi;
                 },
 
                 get currentTime() {

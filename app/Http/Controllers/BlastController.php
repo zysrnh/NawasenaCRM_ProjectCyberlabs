@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Kategori;
+use App\Models\WhatsappLog;
 use Illuminate\Http\Request;
 
 class BlastController extends Controller
@@ -116,11 +117,25 @@ class BlastController extends Controller
                         'blast_status' => 'Terkirim',
                         'last_blasted_at' => now(),
                     ]);
+                    
+                    WhatsappLog::create([
+                        'client_id' => $client->id,
+                        'admin_id' => auth()->id(),
+                        'pesan' => $pesanAdmin,
+                        'status' => 'success'
+                    ]);
                 } else {
                     \Illuminate\Support\Facades\Log::error('Twilio Error Body: ' . $response->body());
                     $client->update([
                         'blast_status' => 'Gagal',
                         'last_blasted_at' => now(),
+                    ]);
+                    
+                    WhatsappLog::create([
+                        'client_id' => $client->id,
+                        'admin_id' => auth()->id(),
+                        'pesan' => $pesanAdmin,
+                        'status' => 'failed'
                     ]);
                 }
             } catch (\Exception $e) {
@@ -128,6 +143,13 @@ class BlastController extends Controller
                 $client->update([
                     'blast_status' => 'Gagal',
                     'last_blasted_at' => now(),
+                ]);
+                
+                WhatsappLog::create([
+                    'client_id' => $client->id,
+                    'admin_id' => auth()->id(),
+                    'pesan' => $pesanAdmin,
+                    'status' => 'failed'
                 ]);
             }
         }

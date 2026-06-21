@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Kategori;
+use App\Models\WhatsappLog;
+use App\Exports\ClientExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -157,10 +160,26 @@ class ClientController extends Controller
                         'blast_status' => 'Terkirim',
                         'last_blasted_at' => now(),
                     ]);
+                    
+                    WhatsappLog::create([
+                        'client_id' => $client->id,
+                        'admin_id' => auth()->id(),
+                        'pesan' => $pesanAdmin,
+                        'status' => 'success'
+                    ]);
+
                     return redirect()->route('admin.clients.index')->with('success', 'Klien berhasil ditambahkan dan Blast WhatsApp telah dikirim!');
                 } else {
                     \Illuminate\Support\Facades\Log::error('Twilio Error Body (Create Client): ' . $response->body());
                     $client->update(['blast_status' => 'Gagal', 'last_blasted_at' => now()]);
+                    
+                    WhatsappLog::create([
+                        'client_id' => $client->id,
+                        'admin_id' => auth()->id(),
+                        'pesan' => $pesanAdmin,
+                        'status' => 'failed'
+                    ]);
+
                     return redirect()->route('admin.clients.index')->with('error', 'Klien berhasil ditambahkan, tapi Blast WhatsApp gagal dikirim.');
                 }
             } catch (\Exception $e) {
@@ -218,10 +237,71 @@ class ClientController extends Controller
         $kebutuhanList = Client::select('kebutuhan_utama')->distinct()->pluck('kebutuhan_utama');
         $sumberList = Client::select('sumber_info')->distinct()->pluck('sumber_info');
 
+        // Data for Chart.js
+        $chartSektor = Client::selectRaw('sektor_bisnis, count(*) as total')
+            ->groupBy('sektor_bisnis')
+            ->orderByDesc('total')
+            ->limit(6)
+            ->get();
+            
+        $chartBulan = Client::selectRaw('MONTH(created_at) as bulan, count(*) as total')
+            ->whereYear('created_at', now()->year)
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->get();
+            
+        // Map month numbers to names
+        $bulanNames = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        $chartBulanData = $chartBulan->map(function($item) use ($bulanNames) {
+            return [
+                'bulan' => $bulanNames[$item->bulan] ?? '-',
+                'total' => $item->total
+            ];
+        });
+
         return view('admin.clients.index', compact(
             'clients', 'totalClients', 'clientsBulanIni', 'topSektor', 'topSumber',
-            'sektorList', 'kebutuhanList', 'sumberList'
+            'sektorList', 'kebutuhanList', 'sumberList', 'chartSektor', 'chartBulanData'
         ));
+    }
+
+    /**
+     * Admin: Export Data Klien to CSV/Excel
+     */
+    public function export(Request $request)
+    {
+        $query = Client::query()->latest();
+
+        // Search
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('nama_klien', 'like', "%{$s}%")
+                  ->orWhere('nama_pic', 'like', "%{$s}%")
+                  ->orWhere('email', 'like', "%{$s}%")
+                  ->orWhere('nomor_telepon', 'like', "%{$s}%");
+            });
+        }
+
+        // Filter by sektor
+        if ($request->filled('sektor')) {
+            $query->where('sektor_bisnis', $request->sektor);
+        }
+
+        // Filter by kebutuhan
+        if ($request->filled('kebutuhan')) {
+            $query->where('kebutuhan_utama', $request->kebutuhan);
+        }
+
+        // Filter by sumber
+        if ($request->filled('sumber')) {
+            $query->where('sumber_info', $request->sumber);
+        }
+
+        $clients = $query->get();
+        $filename = "data_klien_nawasena_" . date('Y-m-d_His') . ".xlsx";
+
+        return Excel::download(new ClientExport($clients), $filename);
     }
 
     /**
@@ -371,10 +451,26 @@ class ClientController extends Controller
                     'blast_status' => 'Terkirim',
                     'last_blasted_at' => now(),
                 ]);
+
+                WhatsappLog::create([
+                    'client_id' => $client->id,
+                    'admin_id' => auth()->id(),
+                    'pesan' => $pesanAdmin,
+                    'status' => 'success'
+                ]);
+
                 return back()->with('success', 'Pesan WhatsApp berhasil dikirim ke ' . $client->nama_klien);
             } else {
                 \Illuminate\Support\Facades\Log::error('Twilio Error Body (Send Individual): ' . $response->body());
                 $client->update(['blast_status' => 'Gagal', 'last_blasted_at' => now()]);
+                
+                WhatsappLog::create([
+                    'client_id' => $client->id,
+                    'admin_id' => auth()->id(),
+                    'pesan' => $pesanAdmin,
+                    'status' => 'failed'
+                ]);
+
                 return back()->with('error', 'Pesan WhatsApp gagal dikirim. Silakan cek Log.');
             }
         } catch (\Exception $e) {

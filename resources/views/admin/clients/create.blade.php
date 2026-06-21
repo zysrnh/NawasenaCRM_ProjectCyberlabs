@@ -187,7 +187,7 @@
                             <div class="flex items-start gap-2 bg-sky-50 border border-sky-100 rounded-lg p-2.5 mb-4">
                                 <svg class="w-4 h-4 text-sky-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <p class="text-[10.5px] text-sky-800 leading-relaxed">
-                                    <strong>"Halo [Nama],"</strong> dan <strong>"Salam, Tim Nawasena"</strong> otomatis ditambahkan oleh template Twilio. Anda cukup mengetik isi intinya saja. Gunakan <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100 shadow-sm">{nama}</code> atau <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100 shadow-sm">{pic}</code>.
+                                    <strong>"Halo [Nama],"</strong> otomatis ditambahkan oleh template di awal pesan. Anda cukup mengetik isi pesan utamanya (dan penutup/salam jika perlu). Gunakan <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100 shadow-sm">{nama}</code> atau <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100 shadow-sm">{pic}</code> jika diperlukan dalam teks.
                                 </p>
                             </div>
 
@@ -218,7 +218,7 @@
                 pesan: `Terima kasih telah mendaftar sebagai klien Nawasena. Kami siap membantu kebutuhan bisnis Anda.`,
                 
                 get previewText() {
-                    let text = `Halo {{1}},\n\n{{2}}\n\nSalam,\nTim Nawasena Cyberlabs`;
+                    let text = `Halo {{1}},\n\n{{2}}`;
                     let p = this.pesan || '';
                     
                     let namaVal = this.clientNama || '[Nama Klien]';

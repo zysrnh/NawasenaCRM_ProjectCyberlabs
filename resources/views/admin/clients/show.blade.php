@@ -98,7 +98,7 @@
                         <div class="flex items-start gap-2 bg-sky-50 border border-sky-100 rounded-lg p-3 mb-4">
                             <svg class="w-4 h-4 text-sky-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             <p class="text-[11px] text-sky-800 leading-relaxed">
-                                <strong>"Halo [Nama],"</strong> dan <strong>"Salam, Tim Nawasena"</strong> otomatis ditambahkan oleh template. Anda cukup mengetik isi pesan utamanya saja. Gunakan <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100 shadow-sm">{nama}</code> atau <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100 shadow-sm">{pic}</code> jika diperlukan.
+                                <strong>"Halo [Nama],"</strong> otomatis ditambahkan oleh template di awal pesan. Anda cukup mengetik isi pesan utamanya (dan penutup/salam jika perlu). Gunakan <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100 shadow-sm">{nama}</code> atau <code class="bg-white px-1 py-0.5 rounded text-sky-600 font-bold border border-sky-100 shadow-sm">{pic}</code> jika diperlukan dalam teks.
                             </p>
                         </div>
                         <textarea name="pesan_blast" rows="4" required class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:border-navy focus:ring-1 focus:ring-navy focus:outline-none resize-none bg-white mb-4" placeholder="Ketik isi pesan di sini..."></textarea>
@@ -112,6 +112,20 @@
                     </form>
                 </div>
             </div>
+
+            {{-- 
+            <!-- FITUR SEMENTARA DI-HIDE SESUAI PERMINTAAN -->
+            <div class="bg-white border border-gray-200 rounded overflow-hidden shadow-sm">
+                <div class="px-5 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <h2 class="font-semibold text-navy text-sm uppercase tracking-wider">Riwayat Pesan WhatsApp</h2>
+                    </div>
+                    <span class="bg-gray-200 text-gray-600 text-xs font-bold px-2 py-0.5 rounded-full">{{ $client->whatsappLogs->count() }} Pesan</span>
+                </div>
+                ...
+            </div> 
+            --}}
 
         </div>
     </div>

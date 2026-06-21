@@ -82,6 +82,22 @@
                 <div class="flash-msg mb-4 p-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-sm font-medium">{{ session('success') }}</div>
             @endif
 
+            {{-- Charts Section --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                <div class="bg-white border border-gray-200 rounded p-5 shadow-sm">
+                    <h3 class="text-sm font-bold text-navy mb-4">Pertumbuhan Klien (Tahun Ini)</h3>
+                    <div class="relative h-64 w-full">
+                        <canvas id="pertumbuhanChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white border border-gray-200 rounded p-5 shadow-sm">
+                    <h3 class="text-sm font-bold text-navy mb-4">Sektor Bisnis Terbanyak</h3>
+                    <div class="relative h-64 w-full flex justify-center">
+                        <canvas id="sektorChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
             {{-- Filters --}}
             <div class="filter-bar bg-white border border-gray-200 rounded mb-4">
                 <form method="GET" action="{{ route('admin.clients.index') }}" class="p-4">
@@ -111,6 +127,10 @@
                         <div class="flex items-end space-x-2">
                             <button type="submit" class="btn-hover flex-1 px-4 py-2 bg-navy text-white text-sm font-medium rounded hover:bg-navy-dark">Filter</button>
                             <a href="{{ route('admin.clients.index') }}" class="px-4 py-2 border border-gray-300 text-nw-body text-sm rounded hover:bg-gray-50 transition-colors duration-150">Reset</a>
+                            <a href="{{ route('admin.clients.export', request()->query()) }}" class="btn-hover px-4 py-2 bg-[#217346] text-white text-sm font-medium rounded hover:bg-[#1e603a] flex items-center transition-colors" title="Export ke Excel/CSV">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Export
+                            </a>
                         </div>
                     </div>
                 </form>
@@ -358,4 +378,80 @@ function confirmBulkDelete() {
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Data for Line Chart (Pertumbuhan)
+            const bulanData = @json($chartBulanData);
+            const lineCtx = document.getElementById('pertumbuhanChart').getContext('2d');
+            
+            // Gradient for line chart
+            let gradient = lineCtx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(30, 58, 95, 0.5)'); // navy
+            gradient.addColorStop(1, 'rgba(30, 58, 95, 0.0)');
+            
+            new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: bulanData.map(d => d.bulan),
+                    datasets: [{
+                        label: 'Klien Baru',
+                        data: bulanData.map(d => d.total),
+                        borderColor: '#1E3A5F', // navy
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#FAB95B', // gold
+                        pointBorderColor: '#fff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [2, 4], color: '#f3f4f6' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Data for Doughnut Chart (Sektor)
+            const sektorData = @json($chartSektor);
+            const doughnutCtx = document.getElementById('sektorChart').getContext('2d');
+            new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: sektorData.map(d => d.sektor_bisnis),
+                    datasets: [{
+                        data: sektorData.map(d => d.total),
+                        backgroundColor: [
+                            '#1E3A5F', // navy
+                            '#FAB95B', // gold
+                            '#2E5A8F', // lighter navy
+                            '#FCCC85', // lighter gold
+                            '#112238', // dark navy
+                            '#e5e7eb'  // gray
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } }
+                    }
+                }
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>
